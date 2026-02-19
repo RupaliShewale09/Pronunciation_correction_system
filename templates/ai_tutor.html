@@ -1,0 +1,1748 @@
+{% extends "base.html" %}
+
+{% block extra_css %}
+<style>
+    * {
+        box-sizing: border-box;
+    }
+
+    .tutor-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    /* Header Navigation */
+    .header-nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+        padding: 15px 20px;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+
+    .nav-left {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .nav-right {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .btn-nav {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .btn-back {
+        background: #f0f4ff;
+        color: #667eea;
+    }
+
+    .btn-back:hover {
+        background: #e0e8ff;
+    }
+
+    .btn-logout {
+        background: #fee;
+        color: #e53935;
+    }
+
+    .btn-logout:hover {
+        background: #fdd;
+    }
+
+    .mode-tabs {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 30px;
+        border-bottom: 2px solid #eef2f6;
+    }
+
+    .tab-btn {
+        padding: 12px 24px;
+        background: transparent;
+        border: none;
+        border-bottom: 3px solid transparent;
+        color: #666;
+        font-size: 16px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .tab-btn:hover {
+        color: #667eea;
+    }
+
+    .tab-btn.active {
+        color: #667eea;
+        border-bottom-color: #667eea;
+    }
+
+    .tab-content {
+        display: none;
+    }
+
+    .tab-content.active {
+        display: block;
+    }
+
+    /* Loading Spinner */
+    .loading-spinner {
+        display: inline-block;
+        width: 14px;
+        height: 14px;
+        border: 2px solid #f3f3f3;
+        border-top: 2px solid #667eea;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    /* Status Messages */
+    .status-message {
+        padding: 12px 20px;
+        border-radius: 8px;
+        margin-top: 15px;
+        margin-bottom: 15px;
+        font-size: 14px;
+        display: none;
+        align-items: center;
+        gap: 10px;
+        animation: slideDown 0.3s ease;
+    }
+
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .status-message.show {
+        display: flex;
+    }
+
+    .status-message.info {
+        background: #e3f2fd;
+        color: #1976d2;
+        border-left: 4px solid #1976d2;
+    }
+
+    .status-message.success {
+        background: #e8f5e9;
+        color: #388e3c;
+        border-left: 4px solid #388e3c;
+    }
+
+    .status-message.error {
+        background: #ffebee;
+        color: #c62828;
+        border-left: 4px solid #c62828;
+    }
+
+    .status-message.warning {
+        background: #fff3e0;
+        color: #f57c00;
+        border-left: 4px solid #f57c00;
+    }
+
+    /* Input Methods Section */
+    .input-methods {
+        background: white;
+        border-radius: 16px;
+        padding: 30px;
+        margin-bottom: 30px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+    }
+
+    .input-methods h3 {
+        font-size: 20px;
+        margin-bottom: 20px;
+        color: #333;
+    }
+
+    .method-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 20px;
+        margin-bottom: 20px;
+    }
+
+    .method-card {
+        background: #f8fafd;
+        border: 2px solid #eef2f6;
+        border-radius: 12px;
+        padding: 20px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .method-card:hover {
+        border-color: #667eea;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
+    }
+
+    .method-card.active {
+        border-color: #667eea;
+        background: #f0f4ff;
+    }
+
+    .method-card h4 {
+        font-size: 16px;
+        margin-bottom: 8px;
+        color: #333;
+    }
+
+    .method-card p {
+        font-size: 13px;
+        color: #666;
+        margin: 0;
+    }
+
+    /* Practice Section */
+    .practice-section {
+        background: white;
+        border-radius: 16px;
+        padding: 30px;
+        margin-bottom: 30px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+    }
+
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .section-header h3 {
+        font-size: 20px;
+        color: #333;
+        margin: 0;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .target-display {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 30px;
+        border-radius: 12px;
+        margin-bottom: 30px;
+        text-align: center;
+    }
+
+    .target-word {
+        font-size: 48px;
+        font-weight: 700;
+        margin-bottom: 10px;
+        letter-spacing: 2px;
+    }
+
+    .target-phonetic {
+        font-size: 20px;
+        opacity: 0.9;
+        font-style: italic;
+    }
+
+    .input-group {
+        margin-bottom: 20px;
+    }
+
+    .input-group label {
+        display: block;
+        font-size: 14px;
+        font-weight: 500;
+        color: #555;
+        margin-bottom: 8px;
+    }
+
+    .input-group input, .input-group select {
+        width: 100%;
+        padding: 12px 16px;
+        border: 2px solid #eef2f6;
+        border-radius: 12px;
+        font-size: 15px;
+        transition: all 0.2s ease;
+    }
+
+    .input-group input:focus, .input-group select:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .btn {
+        padding: 10px 18px;
+        border: none;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+    }
+
+    .btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .btn-primary {
+        background: #667eea;
+        color: white;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+        background: #5568d3;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    }
+
+    .btn-success {
+        background: #4CAF50;
+        color: white;
+        padding: 14px 24px;
+        font-size: 14px;
+    }
+
+    .btn-success:hover:not(:disabled) {
+        background: #43a047;
+    }
+
+    .btn-danger {
+        background: #f44336;
+        color: white;
+        padding: 14px 24px;
+        font-size: 14px;
+    }
+
+    .btn-danger:hover:not(:disabled) {
+        background: #e53935;
+    }
+
+    .btn-secondary {
+        background: #95a5a6;
+        color: white;
+        padding: 14px 24px;
+        font-size: 14px;
+    }
+
+    .btn-secondary:hover:not(:disabled) {
+        background: #7f8c8d;
+    }
+
+    .btn-large {
+        padding: 14px 24px;
+        font-size: 14px;
+    }
+
+    /* Recording Controls */
+    .recording-controls {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+    .recording-status {
+        background: #f8fafd;
+        border-radius: 12px;
+        padding: 20px;
+        text-align: center;
+        border: 2px solid #eef2f6;
+    }
+
+    .timer {
+        font-size: 36px;
+        font-family: monospace;
+        color: #333;
+        margin-bottom: 8px;
+    }
+
+    .status-text {
+        font-size: 14px;
+        color: #666;
+    }
+
+    /* Feedback Section */
+    .feedback-section {
+        background: white;
+        border-radius: 16px;
+        padding: 30px;
+        margin-bottom: 30px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+        display: none;
+    }
+
+    .feedback-section.show {
+        display: block;
+    }
+
+    .score-display {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .score-circle {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 48px;
+        font-weight: 700;
+        margin-bottom: 15px;
+    }
+
+    .score-label {
+        font-size: 16px;
+        color: #666;
+    }
+
+    .feedback-card {
+        background: #f8fafd;
+        border-left: 4px solid #667eea;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+
+    .feedback-card h4 {
+        font-size: 16px;
+        margin-bottom: 10px;
+        color: #333;
+    }
+
+    .feedback-card p {
+        font-size: 14px;
+        color: #555;
+        line-height: 1.6;
+        margin: 0;
+    }
+
+    .typing-text {
+        display: inline;
+        border-right: 2px solid #667eea;
+        animation: blink 0.7s infinite;
+    }
+
+    @keyframes blink {
+        0%, 50% { border-color: #667eea; }
+        51%, 100% { border-color: transparent; }
+    }
+
+    .audio-controls {
+        display: flex;
+        gap: 10px;
+        margin-top: 10px;
+        align-items: center;
+    }
+
+    .audio-btn {
+        padding: 6px 12px;
+        border: none;
+        border-radius: 6px;
+        font-size: 12px;
+        cursor: pointer;
+        background: #667eea;
+        color: white;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        transition: all 0.2s ease;
+    }
+
+    .audio-btn:hover {
+        background: #5568d3;
+    }
+
+    .audio-btn.playing {
+        background: #4CAF50;
+    }
+
+    .audio-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .audio-indicator {
+        display: inline-block;
+        width: 4px;
+        height: 12px;
+        background: white;
+        margin: 0 1px;
+        animation: audioWave 0.8s ease-in-out infinite;
+    }
+
+    .audio-indicator:nth-child(2) {
+        animation-delay: 0.2s;
+    }
+
+    .audio-indicator:nth-child(3) {
+        animation-delay: 0.4s;
+    }
+
+    @keyframes audioWave {
+        0%, 100% { height: 12px; }
+        50% { height: 4px; }
+    }
+
+    /* Suggestions Grid */
+    .suggestions-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 15px;
+        margin-top: 20px;
+    }
+
+    .suggestion-card {
+        background: white;
+        border: 2px solid #eef2f6;
+        border-radius: 12px;
+        padding: 15px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .suggestion-card:hover {
+        border-color: #667eea;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
+    }
+
+    .suggestion-word {
+        font-size: 18px;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 5px;
+    }
+
+    .suggestion-reason {
+        font-size: 12px;
+        color: #666;
+    }
+
+    /* History Table */
+    .history-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+
+    .history-table th, .history-table td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid #eef2f6;
+    }
+
+    .history-table th {
+        background: #f8fafd;
+        font-weight: 600;
+        color: #555;
+    }
+
+    .history-table tr:hover {
+        background: #f8fafd;
+    }
+
+    .badge {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 500;
+    }
+
+    .badge-success {
+        background: #e8f5e9;
+        color: #4CAF50;
+    }
+
+    .badge-warning {
+        background: #fff3e0;
+        color: #FF9800;
+    }
+
+    /* Progress Stats */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+
+    .stat-card {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        text-align: center;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+
+    .stat-value {
+        font-size: 36px;
+        font-weight: 700;
+        color: #667eea;
+        margin-bottom: 5px;
+    }
+
+    .stat-label {
+        font-size: 13px;
+        color: #666;
+    }
+
+    .ai-report {
+        background: linear-gradient(135deg, #f0f4ff 0%, #ffffff 100%);
+        border-radius: 12px;
+        padding: 25px;
+        border-left: 4px solid #667eea;
+        line-height: 1.8;
+        color: #333;
+        white-space: pre-line;
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 40px 20px;
+        color: #999;
+    }
+
+    .empty-state-icon {
+        font-size: 48px;
+        margin-bottom: 15px;
+    }
+
+    @media (max-width: 768px) {
+        .target-word {
+            font-size: 32px;
+        }
+
+        .recording-controls {
+            grid-template-columns: 1fr;
+        }
+
+        .stats-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .header-nav {
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .nav-left, .nav-right {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .section-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 15px;
+        }
+
+        .action-buttons {
+            width: 100%;
+            justify-content: flex-end;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="tutor-container">
+    <!-- Header Navigation -->
+    <div class="header-nav">
+        <div class="nav-left">
+            <button class="btn-nav btn-back" onclick="goBack()">
+                <span>←</span> Back to Dashboard
+            </button>
+        </div>
+        <div class="nav-right">
+            <button class="btn-nav btn-logout" onclick="logout()">
+                <span>🚪</span> Logout
+            </button>
+        </div>
+    </div>
+
+    <!-- Mode Tabs -->
+    <div class="mode-tabs">
+        <button class="tab-btn active" onclick="switchTab('practice')">🎯 Practice</button>
+        <button class="tab-btn" onclick="switchTab('history')">📊 History</button>
+        <button class="tab-btn" onclick="switchTab('progress')">📈 Progress</button>
+    </div>
+
+    <!-- Practice Tab -->
+    <div id="practiceTab" class="tab-content active">
+        <!-- Input Methods -->
+        <div class="input-methods">
+            <h3>Choose How to Practice</h3>
+            <div class="method-cards">
+                <div class="method-card active" id="manualCard" onclick="selectInputMethod('manual')">
+                    <h4>⌨️ Type a Word</h4>
+                    <p>Enter any word or sentence you want to practice</p>
+                </div>
+                <div class="method-card" id="aiCard" onclick="selectInputMethod('ai')">
+                    <h4>🤖 AI Suggestions</h4>
+                    <p>Get personalized word recommendations based on your progress</p>
+                </div>
+            </div>
+
+            <!-- Manual Input -->
+            <div id="manualInput" class="input-section">
+                <div id="manualInputStatus" class="status-message"></div>
+                
+                <div class="input-group">
+                    <label>Word or Sentence to Practice</label>
+                    <input type="text" id="targetWordInput" placeholder="e.g., pronunciation, think, beautiful">
+                </div>
+                <div class="input-group">
+                    <label>Practice Type</label>
+                    <select id="practiceType">
+                        <option value="word">Single Word</option>
+                        <option value="sentence">Full Sentence</option>
+                    </select>
+                </div>
+                <button class="btn btn-primary btn-large" onclick="startPracticeSession()">
+                    <span>🎯</span> Start Practice
+                </button>
+            </div>
+
+            <!-- AI Suggestions -->
+            <div id="aiSuggestions" class="input-section" style="display: none;">
+                <div id="aiSuggestionsStatus" class="status-message"></div>
+                
+                <div class="input-group">
+                    <label>Difficulty Level</label>
+                    <select id="difficultyLevel">
+                        <option value="easy">Easy</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="hard">Hard</option>
+                    </select>
+                </div>
+                <button class="btn btn-primary btn-large" id="generateSuggestionsBtn" onclick="getAISuggestions()">
+                    <span>✨</span> Generate Suggestions
+                </button>
+                <div id="suggestionsContainer" class="suggestions-grid"></div>
+            </div>
+        </div>
+
+        <!-- Practice Section (Hidden initially) -->
+        <div id="practiceSection" class="practice-section" style="display: none;">
+            <div id="practiceStatus" class="status-message"></div>
+            
+            <!-- Target Word Display -->
+            <div class="target-display">
+                <div class="target-word" id="targetWordDisplay">-</div>
+                <div class="target-phonetic" id="targetPhonetic">Click reference audio below</div>
+                <button class="btn btn-secondary" style="margin-top: 15px;" onclick="playReferenceAudio()">
+                    <span>🔊</span> Listen to Reference
+                </button>
+            </div>
+
+            <!-- Recording Controls -->
+            <div class="recording-controls">
+                <button id="startRecBtn" class="btn btn-success" onclick="startRecording()">
+                    <span>🎙️</span> Start Recording
+                </button>
+                <button id="stopRecBtn" class="btn btn-danger" disabled onclick="stopRecording()">
+                    <span>⏹️</span> Stop & Analyze
+                </button>
+            </div>
+
+            <div class="recording-status">
+                <div class="timer" id="recordTimer">00:00</div>
+                <div class="status-text" id="recordStatus">Ready to record</div>
+            </div>
+
+            <div style="text-align: center; margin-top: 20px;">
+                <button class="btn btn-secondary" onclick="cancelPractice()">
+                    <span>↩️</span> Choose Different Word
+                </button>
+            </div>
+        </div>
+
+        <!-- Feedback Section -->
+        <div id="feedbackSection" class="feedback-section">
+            <div class="score-display">
+                <div class="score-circle" id="scoreCircle">-</div>
+                <div class="score-label" id="scoreLabel">Pronunciation Score</div>
+            </div>
+
+            <div class="feedback-card" id="aiFeedbackCard" style="border-left-color: #667eea;">
+                <h4>🤖 AI Feedback</h4>
+                <p id="aiFeedbackText">-</p>
+                <div class="audio-controls">
+                    <button class="audio-btn" id="playFeedbackBtn" onclick="playFeedback()">
+                        <span>🔊</span> Play Feedback
+                    </button>
+                    <button class="audio-btn" id="stopFeedbackBtn" onclick="stopFeedback()" style="display: none;">
+                        <span>⏹️</span> Stop
+                    </button>
+                </div>
+            </div>
+
+            <div class="feedback-card" id="aiTipsCard" style="border-left-color: #4CAF50;">
+                <h4>💡 Tips & Guidance</h4>
+                <p id="aiTipsText">-</p>
+                <div class="audio-controls">
+                    <button class="audio-btn" id="playTipsBtn" onclick="playTips()">
+                        <span>🔊</span> Play Tips
+                    </button>
+                    <button class="audio-btn" id="stopTipsBtn" onclick="stopTips()" style="display: none;">
+                        <span>⏹️</span> Stop
+                    </button>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 20px;">
+                <button class="btn btn-primary btn-large" onclick="tryAgain()">
+                    <span>🔄</span> Try Again
+                </button>
+                <button class="btn btn-secondary btn-large" onclick="cancelPractice()">
+                    <span>✨</span> Practice New Word
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- History Tab -->
+    <div id="historyTab" class="tab-content">
+        <div class="practice-section">
+            <div class="section-header">
+                <h3>📚 Practice History</h3>
+                <div class="action-buttons">
+                    <button class="btn btn-primary" id="refreshHistoryBtn" onclick="loadHistory()">
+                        <span>🔄</span> Refresh
+                    </button>
+                </div>
+            </div>
+            
+            <div id="historyStatus" class="status-message"></div>
+            
+            <table class="history-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Word/Sentence</th>
+                        <th>Score</th>
+                        <th>Attempt #</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="historyTableBody">
+                    <tr>
+                        <td colspan="5">
+                            <div class="empty-state">
+                                <div class="empty-state-icon">📚</div>
+                                <div>No practice history yet. Start practicing to see your progress!</div>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Progress Tab -->
+    <div id="progressTab" class="tab-content">
+        <div id="progressStatus" class="status-message"></div>
+        
+        <div class="stats-grid" id="statsGrid">
+            <!-- Stats cards will be populated dynamically -->
+        </div>
+
+        <div class="practice-section">
+            <div class="section-header">
+                <h3>📋 AI Progress Report</h3>
+                <div class="action-buttons">
+                    <button class="btn btn-primary" id="generateReportBtn" onclick="generateProgressReport()">
+                        <span>✨</span> Generate Report
+                    </button>
+                </div>
+            </div>
+            
+            <div id="reportStatus" class="status-message"></div>
+            
+            <div id="aiReportContainer" class="ai-report" style="display: none;">
+                Loading report...
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Token Management & Authentication
+const token = localStorage.getItem("token");
+if (!token) {
+    window.location.href = "/";
+}
+
+// Check token validity and decode user info
+function checkTokenValidity() {
+    if (!token) return false;
+    try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        const exp = payload.exp * 1000;
+        
+        if (Date.now() >= exp) {
+            console.warn("Token expired");
+            return false;
+        }
+        
+        return true;
+    } catch (e) {
+        console.error('Invalid token:', e);
+        return false;
+    }
+}
+
+if (!checkTokenValidity()) {
+    localStorage.removeItem('token');
+    window.location.href = "/";
+}
+
+// Check token before each API call
+function checkAuth() {
+    if (!checkTokenValidity()) {
+        showMessage('Session expired. Please login again.', 'error');
+        setTimeout(() => {
+            localStorage.removeItem('token');
+            window.location.href = "/";
+        }, 2000);
+        return false;
+    }
+    return true;
+}
+
+let currentInputMethod = 'manual';
+let currentTargetWord = '';
+let mediaRecorder;
+let audioChunks = [];
+let recordingStartTime;
+let timerInterval;
+let isSubmitting = false;
+
+// Text-to-Speech variables
+let feedbackSpeech = null;
+let tipsSpeech = null;
+let feedbackText = '';
+let tipsText = '';
+
+// Check if speech synthesis is supported
+const speechSupported = 'speechSynthesis' in window;
+
+// Navigation Functions
+function goBack() {
+    window.location.href = '/dashboard';
+}
+
+function logout() {
+    localStorage.removeItem('token');
+    showMessage('Logging out...', 'info');
+    setTimeout(() => {
+        window.location.href = '/';
+    }, 1000);
+}
+
+// Status Message Helper
+function showMessage(message, type = 'info', containerId = null) {
+    const containers = containerId ? [containerId] : [
+        'aiSuggestionsStatus',
+        'practiceStatus',
+        'historyStatus',
+        'progressStatus',
+        'reportStatus',
+        'manualInputStatus'
+    ];
+    
+    containers.forEach(id => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.className = `status-message show ${type}`;
+            element.innerHTML = `
+                ${type === 'info' ? '<div class="loading-spinner"></div>' : ''}
+                <span>${message}</span>
+            `;
+            
+            if (type === 'success' || type === 'error' || type === 'warning') {
+                setTimeout(() => {
+                    element.classList.remove('show');
+                }, 5000);
+            }
+        }
+    });
+}
+
+function hideMessage(containerId) {
+    const element = document.getElementById(containerId);
+    if (element) {
+        element.classList.remove('show');
+    }
+}
+
+function hideAllMessages() {
+    const containers = [
+        'aiSuggestionsStatus',
+        'practiceStatus',
+        'historyStatus',
+        'progressStatus',
+        'reportStatus',
+        'manualInputStatus'
+    ];
+    containers.forEach(id => hideMessage(id));
+}
+
+// Tab Switching
+function switchTab(tabName) {
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+    
+    event.target.classList.add('active');
+    document.getElementById(tabName + 'Tab').classList.add('active');
+
+    hideAllMessages();
+
+    if (tabName === 'history') {
+        loadHistory();
+    } else if (tabName === 'progress') {
+        loadProgress();
+    }
+}
+
+// Input Method Selection
+function selectInputMethod(method) {
+    currentInputMethod = method;
+    
+    document.querySelectorAll('.method-card').forEach(card => card.classList.remove('active'));
+    hideAllMessages();
+    
+    if (method === 'manual') {
+        document.getElementById('manualCard').classList.add('active');
+        document.getElementById('manualInput').style.display = 'block';
+        document.getElementById('aiSuggestions').style.display = 'none';
+    } else {
+        document.getElementById('aiCard').classList.add('active');
+        document.getElementById('manualInput').style.display = 'none';
+        document.getElementById('aiSuggestions').style.display = 'block';
+    }
+}
+
+// AI Suggestions
+async function getAISuggestions() {
+    if (!checkAuth()) return;
+    
+    const difficulty = document.getElementById('difficultyLevel').value;
+    const btn = document.getElementById('generateSuggestionsBtn');
+    const container = document.getElementById('suggestionsContainer');
+    
+    // Clear previous suggestions
+    container.innerHTML = '';
+    
+    // Show loading message
+    showMessage('Generating AI suggestions for you...', 'info', 'aiSuggestionsStatus');
+    btn.disabled = true;
+    btn.innerHTML = '<div class="loading-spinner"></div> <span>Generating...</span>';
+    
+    try {
+        const res = await fetch('/api/tutor/generate-words', {
+            method: 'POST',
+            headers: {
+                'Authorization': 'Bearer ' + token,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ difficulty })
+        });
+
+        if (res.status === 401) {
+            showMessage('Session expired. Redirecting to login...', 'error', 'aiSuggestionsStatus');
+            setTimeout(() => logout(), 2000);
+            return;
+        }
+
+        const data = await res.json();
+        
+        if (data.suggestions && data.suggestions.length > 0) {
+            showMessage(`✨ Generated ${data.suggestions.length} personalized suggestions!`, 'success', 'aiSuggestionsStatus');
+            
+            data.suggestions.forEach(sug => {
+                const card = document.createElement('div');
+                card.className = 'suggestion-card';
+                card.onclick = () => selectSuggestion(sug.word);
+                card.innerHTML = `
+                    <div class="suggestion-word">${sug.word}</div>
+                    <div class="suggestion-reason">${sug.reason}</div>
+                `;
+                container.appendChild(card);
+            });
+        } else {
+            showMessage('No suggestions available at the moment. Try a different difficulty level.', 'warning', 'aiSuggestionsStatus');
+        }
+    } catch (error) {
+        console.error('Error getting suggestions:', error);
+        showMessage('Failed to get AI suggestions. Please check your connection and try again.', 'error', 'aiSuggestionsStatus');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<span>✨</span> Generate Suggestions';
+    }
+}
+
+function selectSuggestion(word) {
+    // Set the word and start practice directly
+    currentTargetWord = word;
+    
+    // Hide input methods and show practice section
+    hideAllMessages();
+    document.querySelector('.input-methods').style.display = 'none';
+    document.getElementById('practiceSection').style.display = 'block';
+    document.getElementById('feedbackSection').classList.remove('show');
+    
+    // Update display
+    document.getElementById('targetWordDisplay').textContent = word;
+    document.getElementById('targetPhonetic').textContent = 'Click reference audio below';
+    
+    // Show success message
+    showMessage(`🎯 Ready to practice: "${word}"`, 'success', 'practiceStatus');
+    
+    // Scroll to practice section
+    document.getElementById('practiceSection').scrollIntoView({ behavior: 'smooth' });
+}
+
+// Start Practice Session
+function startPracticeSession() {
+    const targetWord = document.getElementById('targetWordInput').value.trim();
+    
+    if (!targetWord) {
+        showMessage('⚠️ Please enter a word or sentence to practice', 'warning', 'manualInputStatus');
+        document.getElementById('targetWordInput').focus();
+        return;
+    }
+    
+    currentTargetWord = targetWord;
+    
+    hideAllMessages();
+    document.querySelector('.input-methods').style.display = 'none';
+    document.getElementById('practiceSection').style.display = 'block';
+    document.getElementById('feedbackSection').classList.remove('show');
+    
+    document.getElementById('targetWordDisplay').textContent = targetWord;
+    document.getElementById('targetPhonetic').textContent = 'Click reference audio below';
+    
+    showMessage(`🎯 Ready to practice: "${targetWord}"`, 'success', 'practiceStatus');
+}
+
+function cancelPractice() {
+    hideAllMessages();
+    stopAllSpeech(); // Stop any ongoing speech
+    document.querySelector('.input-methods').style.display = 'block';
+    document.getElementById('practiceSection').style.display = 'none';
+    document.getElementById('feedbackSection').classList.remove('show');
+    document.getElementById('targetWordInput').value = '';
+}
+
+// Reference Audio
+function playReferenceAudio() {
+    showMessage('🔊 Playing reference audio...', 'info', 'practiceStatus');
+    const audio = new Audio(`/api/tutor/listen-word?text=${encodeURIComponent(currentTargetWord)}`);
+    audio.play();
+    audio.onended = () => {
+        setTimeout(() => hideMessage('practiceStatus'), 1000);
+    };
+    audio.onerror = () => {
+        showMessage('Failed to play audio. Please try again.', 'error', 'practiceStatus');
+    };
+}
+
+// Recording Functions
+async function startRecording() {
+    if (!checkAuth()) return;
+    
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        mediaRecorder = new MediaRecorder(stream);
+        audioChunks = [];
+
+        mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+        
+        mediaRecorder.onstop = async () => {
+            const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+            await submitPracticeAttempt(audioBlob);
+            stream.getTracks().forEach(track => track.stop());
+        };
+
+        mediaRecorder.start();
+        recordingStartTime = Date.now();
+        timerInterval = setInterval(updateTimer, 1000);
+
+        document.getElementById('startRecBtn').disabled = true;
+        document.getElementById('stopRecBtn').disabled = false;
+        document.getElementById('recordStatus').textContent = '🔴 Recording in progress...';
+        
+        showMessage('🎙️ Recording started! Speak clearly into your microphone.', 'success', 'practiceStatus');
+        
+    } catch (err) {
+        console.error('Microphone error:', err);
+        showMessage('❌ Failed to access microphone. Please allow microphone permissions and try again.', 'error', 'practiceStatus');
+    }
+}
+
+function stopRecording() {
+    if (mediaRecorder && mediaRecorder.state === 'recording') {
+        mediaRecorder.stop();
+        clearInterval(timerInterval);
+        
+        document.getElementById('startRecBtn').disabled = false;
+        document.getElementById('stopRecBtn').disabled = true;
+        document.getElementById('recordStatus').textContent = '⏳ Analyzing your pronunciation...';
+        document.getElementById('recordTimer').textContent = '00:00';
+        
+        showMessage('⏳ Analyzing your pronunciation with AI...', 'info', 'practiceStatus');
+    }
+}
+
+function updateTimer() {
+    const elapsed = Math.floor((Date.now() - recordingStartTime) / 1000);
+    const minutes = Math.floor(elapsed / 60);
+    const seconds = elapsed % 60;
+    document.getElementById('recordTimer').textContent = 
+        `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+}
+
+// Submit Practice Attempt
+async function submitPracticeAttempt(audioBlob) {
+    if (!checkAuth()) return;
+    if (isSubmitting) return;
+    if (!audioBlob) {
+        showMessage('❌ No audio recorded. Please try again.', 'error', 'practiceStatus');
+        document.getElementById('recordStatus').textContent = 'Ready to record';
+        return;
+    }
+
+    isSubmitting = true;
+
+    const formData = new FormData();
+    formData.append('audio', audioBlob, 'practice.wav');
+    formData.append('target_word', currentTargetWord);
+    formData.append('target_type', document.getElementById('practiceType').value);
+    formData.append('mode', 'ml');
+
+    try {
+        const res = await fetch('/api/tutor/practice', {
+            method: 'POST',
+            headers: {
+                'Authorization': 'Bearer ' + token
+            },
+            body: formData
+        });
+
+        if (res.status === 401) {
+            showMessage('Session expired. Redirecting to login...', 'error', 'practiceStatus');
+            setTimeout(() => logout(), 2000);
+            return;
+        }
+
+        const data = await res.json();
+        
+        if (res.ok) {
+            displayFeedback(data);
+            document.getElementById('recordStatus').textContent = '✅ Analysis Complete';
+            setTimeout(() => hideMessage('practiceStatus'), 1000);
+        } else {
+            console.error(data);
+            showMessage(data.error || '❌ Server error. Please try again.', 'error', 'practiceStatus');
+            document.getElementById('recordStatus').textContent = 'Ready to record';
+        }
+    } catch (error) {
+        console.error('Error submitting attempt:', error);
+        showMessage('❌ Failed to submit practice. Please check your connection and try again.', 'error', 'practiceStatus');
+        document.getElementById('recordStatus').textContent = 'Ready to record';
+    } finally {
+        isSubmitting = false;
+    }
+}
+
+// Display Feedback
+function displayFeedback(data) {
+    document.getElementById('practiceSection').style.display = 'none';
+    document.getElementById('feedbackSection').classList.add('show');
+    
+    const score = Math.round(data.score);
+    document.getElementById('scoreCircle').textContent = score + '%';
+    
+    if (data.is_mastered) {
+        document.getElementById('scoreLabel').textContent = '🎉 Mastered!';
+        document.getElementById('scoreCircle').style.background = 'linear-gradient(135deg, #4CAF50 0%, #45a049 100%)';
+    } else {
+        document.getElementById('scoreLabel').textContent = `Attempt #${data.attempt_number}`;
+        document.getElementById('scoreCircle').style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+    }
+    
+    // Store feedback text
+    feedbackText = data.ai_feedback || 'Keep practicing!';
+    tipsText = data.ai_tips || 'Focus on clear pronunciation.';
+    
+    // Clear previous text
+    document.getElementById('aiFeedbackText').textContent = '';
+    document.getElementById('aiTipsText').textContent = '';
+    
+    // Scroll to feedback
+    document.getElementById('feedbackSection').scrollIntoView({ behavior: 'smooth' });
+    
+    // Start typing animation and speech for feedback simultaneously
+    setTimeout(() => {
+        // Start playing voice immediately
+        playFeedbackAuto();
+        // Start typing at the same time
+        typeText('aiFeedbackText', feedbackText, 30);
+    }, 500);
+    
+    // Start typing animation and voice for tips after feedback duration
+    const feedbackDuration = estimateSpeechDuration(feedbackText);
+    setTimeout(() => {
+        playTipsAuto();
+        typeText('aiTipsText', tipsText, 30);
+    }, 500 + feedbackDuration + 800); // Add 800ms pause between feedback and tips
+}
+
+// Estimate speech duration (rough calculation: ~150 words per minute)
+function estimateSpeechDuration(text) {
+    const words = text.split(' ').length;
+    const duration = (words / 150) * 60 * 1000; // Convert to milliseconds
+    return duration;
+}
+
+// Typing animation function
+function typeText(elementId, text, speed, callback) {
+    const element = document.getElementById(elementId);
+    element.textContent = '';
+    let index = 0;
+    
+    const typingInterval = setInterval(() => {
+        if (index < text.length) {
+            element.textContent += text.charAt(index);
+            index++;
+        } else {
+            clearInterval(typingInterval);
+            if (callback) callback();
+        }
+    }, speed);
+}
+
+// Auto-play functions (called automatically by displayFeedback)
+function playFeedbackAuto() {
+    if (!speechSupported) return;
+    
+    stopAllSpeech();
+    
+    const btn = document.getElementById('playFeedbackBtn');
+    const stopBtn = document.getElementById('stopFeedbackBtn');
+    
+    btn.style.display = 'none';
+    stopBtn.style.display = 'inline-flex';
+    stopBtn.classList.add('playing');
+    
+    feedbackSpeech = new SpeechSynthesisUtterance(feedbackText);
+    feedbackSpeech.rate = 0.9;
+    feedbackSpeech.pitch = 1.0;
+    feedbackSpeech.volume = 1.0;
+    
+    const voices = speechSynthesis.getVoices();
+    const preferredVoice = voices.find(voice => 
+        voice.name.includes('Female') || 
+        voice.name.includes('Samantha') || 
+        voice.name.includes('Victoria') ||
+        voice.name.includes('Google US English')
+    );
+    if (preferredVoice) {
+        feedbackSpeech.voice = preferredVoice;
+    }
+    
+    feedbackSpeech.onend = () => {
+        btn.style.display = 'inline-flex';
+        stopBtn.style.display = 'none';
+        stopBtn.classList.remove('playing');
+    };
+    
+    feedbackSpeech.onerror = () => {
+        btn.style.display = 'inline-flex';
+        stopBtn.style.display = 'none';
+        stopBtn.classList.remove('playing');
+    };
+    
+    speechSynthesis.speak(feedbackSpeech);
+}
+
+function playTipsAuto() {
+    if (!speechSupported) return;
+    
+    stopAllSpeech();
+    
+    const btn = document.getElementById('playTipsBtn');
+    const stopBtn = document.getElementById('stopTipsBtn');
+    
+    btn.style.display = 'none';
+    stopBtn.style.display = 'inline-flex';
+    stopBtn.classList.add('playing');
+    
+    tipsSpeech = new SpeechSynthesisUtterance(tipsText);
+    tipsSpeech.rate = 0.9;
+    tipsSpeech.pitch = 1.0;
+    tipsSpeech.volume = 1.0;
+    
+    const voices = speechSynthesis.getVoices();
+    const preferredVoice = voices.find(voice => 
+        voice.name.includes('Female') || 
+        voice.name.includes('Samantha') || 
+        voice.name.includes('Victoria') ||
+        voice.name.includes('Google US English')
+    );
+    if (preferredVoice) {
+        tipsSpeech.voice = preferredVoice;
+    }
+    
+    tipsSpeech.onend = () => {
+        btn.style.display = 'inline-flex';
+        stopBtn.style.display = 'none';
+        stopBtn.classList.remove('playing');
+    };
+    
+    tipsSpeech.onerror = () => {
+        btn.style.display = 'inline-flex';
+        stopBtn.style.display = 'none';
+        stopBtn.classList.remove('playing');
+    };
+    
+    speechSynthesis.speak(tipsSpeech);
+}
+
+// Text-to-Speech functions (manual controls)
+function playFeedback() {
+    playFeedbackAuto();
+}
+
+function playTips() {
+    playTipsAuto();
+}
+
+function stopFeedback() {
+    if (feedbackSpeech) {
+        speechSynthesis.cancel();
+        document.getElementById('playFeedbackBtn').style.display = 'inline-flex';
+        document.getElementById('stopFeedbackBtn').style.display = 'none';
+        document.getElementById('stopFeedbackBtn').classList.remove('playing');
+    }
+}
+
+function playTips() {
+    if (!speechSupported) {
+        showMessage('Text-to-speech is not supported in your browser.', 'warning', 'practiceStatus');
+        return;
+    }
+    
+    // Stop any ongoing speech
+    stopAllSpeech();
+    
+    const btn = document.getElementById('playTipsBtn');
+    const stopBtn = document.getElementById('stopTipsBtn');
+    
+    btn.style.display = 'none';
+    stopBtn.style.display = 'inline-flex';
+    stopBtn.classList.add('playing');
+    
+    tipsSpeech = new SpeechSynthesisUtterance(tipsText);
+    
+    // Configure speech
+    tipsSpeech.rate = 0.9;
+    tipsSpeech.pitch = 1.0;
+    tipsSpeech.volume = 1.0;
+    
+    // Try to use a female voice if available
+    const voices = speechSynthesis.getVoices();
+    const preferredVoice = voices.find(voice => 
+        voice.name.includes('Female') || 
+        voice.name.includes('Samantha') || 
+        voice.name.includes('Victoria') ||
+        voice.name.includes('Google US English')
+    );
+    if (preferredVoice) {
+        tipsSpeech.voice = preferredVoice;
+    }
+    
+    tipsSpeech.onend = () => {
+        btn.style.display = 'inline-flex';
+        stopBtn.style.display = 'none';
+        stopBtn.classList.remove('playing');
+    };
+    
+    tipsSpeech.onerror = () => {
+        btn.style.display = 'inline-flex';
+        stopBtn.style.display = 'none';
+        stopBtn.classList.remove('playing');
+        showMessage('Failed to play audio. Please try again.', 'error', 'practiceStatus');
+    };
+    
+    speechSynthesis.speak(tipsSpeech);
+}
+
+function stopTips() {
+    if (tipsSpeech) {
+        speechSynthesis.cancel();
+        document.getElementById('playTipsBtn').style.display = 'inline-flex';
+        document.getElementById('stopTipsBtn').style.display = 'none';
+        document.getElementById('stopTipsBtn').classList.remove('playing');
+    }
+}
+
+function stopAllSpeech() {
+    if (speechSynthesis.speaking) {
+        speechSynthesis.cancel();
+    }
+    
+    // Reset all buttons
+    document.getElementById('playFeedbackBtn').style.display = 'inline-flex';
+    document.getElementById('stopFeedbackBtn').style.display = 'none';
+    document.getElementById('stopFeedbackBtn').classList.remove('playing');
+    
+    document.getElementById('playTipsBtn').style.display = 'inline-flex';
+    document.getElementById('stopTipsBtn').style.display = 'none';
+    document.getElementById('stopTipsBtn').classList.remove('playing');
+}
+
+function tryAgain() {
+    hideAllMessages();
+    stopAllSpeech(); // Stop any ongoing speech
+    document.getElementById('feedbackSection').classList.remove('show');
+    document.getElementById('practiceSection').style.display = 'block';
+    document.getElementById('recordStatus').textContent = 'Ready to record';
+    
+    // Scroll back to practice section
+    document.getElementById('practiceSection').scrollIntoView({ behavior: 'smooth' });
+}
+
+// Load History
+async function loadHistory() {
+    if (!checkAuth()) return;
+    
+    const btn = document.getElementById('refreshHistoryBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<div class="loading-spinner"></div> <span>Loading...</span>';
+    
+    showMessage('📚 Loading your practice history...', 'info', 'historyStatus');
+    
+    try {
+        const res = await fetch('/api/tutor/history?limit=30', {
+            headers: {
+                'Authorization': 'Bearer ' + token
+            }
+        });
+
+        if (res.status === 401) {
+            showMessage('Session expired. Redirecting to login...', 'error', 'historyStatus');
+            setTimeout(() => logout(), 2000);
+            return;
+        }
+
+        const data = await res.json();
+        
+        const tbody = document.getElementById('historyTableBody');
+        tbody.innerHTML = '';
+        
+        if (data.history && data.history.length > 0) {
+            showMessage(`✅ Loaded ${data.history.length} practice session${data.history.length > 1 ? 's' : ''}`, 'success', 'historyStatus');
+            
+            data.history.forEach(attempt => {
+                const row = document.createElement('tr');
+                const date = new Date(attempt.timestamp).toLocaleString();
+                const badge = attempt.is_mastered 
+                    ? '<span class="badge badge-success">Mastered</span>'
+                    : '<span class="badge badge-warning">Practice</span>';
+                
+                row.innerHTML = `
+                    <td>${date}</td>
+                    <td>${attempt.target_word}</td>
+                    <td>${Math.round(attempt.score)}%</td>
+                    <td>#${attempt.attempt_number}</td>
+                    <td>${badge}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        } else {
+            showMessage('📚 No practice history found. Start practicing to build your history!', 'warning', 'historyStatus');
+            tbody.innerHTML = `<tr><td colspan="5">
+                <div class="empty-state">
+                    <div class="empty-state-icon">📚</div>
+                    <div>No practice history yet. Start practicing to see your progress!</div>
+                </div>
+            </td></tr>`;
+        }
+    } catch (error) {
+        console.error('Error loading history:', error);
+        showMessage('❌ Failed to load history. Please try again.', 'error', 'historyStatus');
+        
+        const tbody = document.getElementById('historyTableBody');
+        tbody.innerHTML = `<tr><td colspan="5">
+            <div class="empty-state">
+                <div class="empty-state-icon">⚠️</div>
+                <div>Failed to load history. Please try refreshing.</div>
+            </div>
+        </td></tr>`;
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<span>🔄</span> Refresh';
+    }
+}
+
+// Load Progress
+async function loadProgress() {
+    if (!checkAuth()) return;
+    
+    showMessage('📊 Loading your progress statistics...', 'info', 'progressStatus');
+    
+    try {
+        const res = await fetch('/api/tutor/progress', {
+            headers: {
+                'Authorization': 'Bearer ' + token
+            }
+        });
+
+        if (res.status === 401) {
+            showMessage('Session expired. Redirecting to login...', 'error', 'progressStatus');
+            setTimeout(() => logout(), 2000);
+            return;
+        }
+
+        const data = await res.json();
+        
+        if (data.statistics) {
+            const stats = data.statistics;
+            const statsGrid = document.getElementById('statsGrid');
+            
+            statsGrid.innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-value">${stats.total_attempts || 0}</div>
+                    <div class="stat-label">Total Attempts</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${stats.words_mastered || 0}</div>
+                    <div class="stat-label">Words Mastered</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${Math.round(stats.average_score || 0)}%</div>
+                    <div class="stat-label">Average Score</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${stats.current_streak || 0}</div>
+                    <div class="stat-label">Day Streak</div>
+                </div>
+            `;
+            
+            showMessage('✅ Progress statistics loaded successfully!', 'success', 'progressStatus');
+        } else {
+            showMessage('⚠️ No progress data available yet.', 'warning', 'progressStatus');
+        }
+    } catch (error) {
+        console.error('Error loading progress:', error);
+        showMessage('❌ Failed to load progress. Please try again.', 'error', 'progressStatus');
+    }
+}
+
+async function generateProgressReport() {
+    if (!checkAuth()) return;
+    
+    const container = document.getElementById('aiReportContainer');
+    const btn = document.getElementById('generateReportBtn');
+    
+    container.style.display = 'block';
+    container.textContent = 'Generating your personalized AI report...';
+    
+    btn.disabled = true;
+    btn.innerHTML = '<div class="loading-spinner"></div> <span>Generating...</span>';
+    
+    showMessage('🤖 AI is analyzing your progress data...', 'info', 'reportStatus');
+    
+    try {
+        const res = await fetch('/api/tutor/progress', {
+            headers: {
+                'Authorization': 'Bearer ' + token
+            }
+        });
+
+        if (res.status === 401) {
+            showMessage('Session expired. Redirecting to login...', 'error', 'reportStatus');
+            setTimeout(() => logout(), 2000);
+            return;
+        }
+
+        const data = await res.json();
+        
+        if (data.ai_report) {
+            container.textContent = data.ai_report;
+            showMessage('✅ Report generated successfully!', 'success', 'reportStatus');
+        } else {
+            container.textContent = 'Not enough practice data yet. Complete more practice sessions to get personalized insights!';
+            showMessage('📊 Need more practice data for a comprehensive report.', 'warning', 'reportStatus');
+        }
+    } catch (error) {
+        console.error('Error generating report:', error);
+        container.textContent = 'Failed to generate report. Please try again.';
+        showMessage('❌ Failed to generate report. Please try again.', 'error', 'reportStatus');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<span>✨</span> Generate Report';
+    }
+}
+
+// Auto-load progress when switching to progress tab
+document.addEventListener('DOMContentLoaded', function() {
+    // Load voices for text-to-speech
+    if (speechSupported) {
+        // Chrome loads voices asynchronously
+        if (speechSynthesis.onvoiceschanged !== undefined) {
+            speechSynthesis.onvoiceschanged = () => {
+                speechSynthesis.getVoices();
+            };
+        }
+        // Trigger voice loading
+        speechSynthesis.getVoices();
+    }
+});
+</script>
+{% endblock %}
