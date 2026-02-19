@@ -1,0 +1,5 @@
+venv
+.env
+practice_uploads
+uploads
+*.db
