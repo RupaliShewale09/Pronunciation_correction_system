@@ -2,31 +2,89 @@
 
 An advanced **AI-powered Pronunciation Correction System** designed to help users improve their spoken English through intelligent speech analysis, phonetic evaluation, and grammar feedback.
 
-This system leverages **Automatic Speech Recognition (ASR)** and modern **Machine Learning models** to provide real-time pronunciation accuracy, phoneme-level insights, and AI-driven grammar correction.
+The system leverages **Automatic Speech Recognition (ASR)** and modern **Machine Learning models** to provide:
+
+- Real-time pronunciation analysis
+- Phoneme-level evaluation
+- AI-assisted grammar correction
+- Personalized learning feedback
 
 ---
 
-## 🚀 Overview
+## 🚀 System Modes
 
-The application allows users to record their speech and evaluate pronunciation using two distinct evaluation engines:
+The application provides two learning modes tailored for different user needs.
 
-* 🧠 **ML-Based Engine (Whisper)**
-* ⚡ **Rule-Based Engine (Vosk + CMU Dictionary)**
+##  1️⃣ Quick Start Mode
 
-The backend is built with **Flask**, and the platform provides:
+Designed for **instant pronunciation feedback without storing user data**.
 
-* Accurate speech-to-text transcription
-* Word-level pronunciation feedback
-* Phonetic comparison
-* Grammar analysis using AI
-* Personalized learning insights
-* Secure user authentication
+### Features
 
-This makes it a complete **AI-assisted spoken English improvement platform**.
+- Users can choose between:
+  - **Rule-Based Engine** (using Vosk)
+  - **ML-Based Engine** (using Whisper)
+
+- Provides immediate pronunciation validation.
+- Displays whether the spoken word is **correct or incorrect**.
+- Includes **audio playback** for the correct pronunciation.
+
+This mode is ideal for **quick practice and instant feedback**.
+
+
+
+## 2️⃣ Practice Mode (ML-Driven)
+
+A **structured learning environment** focused on long-term improvement.
+
+### Features
+
+- Uses the **ML-based Whisper engine exclusively** for maximum accuracy.
+- Tracks **user progress over time**.
+- Detects **specific mispronounced words**.
+- Provides **AI-generated insights and improvement tips**.
+- Includes **Text-to-Speech (TTS)** to help users learn correct pronunciation.
+
+This mode is ideal for **serious learners aiming to improve pronunciation gradually**.
 
 ---
 
-## 🛠️ Technology Stack
+## 🧠 Models
+
+## 🔹 ML-Based Engine (Primary Engine)
+
+The system uses a **fine-tuned Whisper model** to improve pronunciation evaluation.
+
+### Key Highlights
+
+- The base Whisper model is **fine-tuned to detect subtle pronunciation differences**.
+- Provides **context-aware speech recognition**.
+- Performs **deep phonetic evaluation**.
+- Generates **highly accurate transcription results**.
+
+This engine is particularly suitable for **advanced pronunciation learning**.
+
+
+## 🔹 Rule-Based Engine
+
+- Powered by **Vosk**
+- Uses the **CMU Pronouncing Dictionary (cmudict)** for phoneme comparison.
+- Performs **phoneme-level pronunciation validation**.
+- Lightweight and fast for **low-resource environments**.
+
+
+## 🔹 AI Assistance
+
+AI capabilities are integrated using:
+
+- **Google Gemini API** for:
+  - Grammar correction
+  - Sentence improvement suggestions
+  - Personalized AI tutoring
+
+---
+
+# 🛠️ Technology Stack
 
 ### 🔹 Backend
 
@@ -36,7 +94,7 @@ This makes it a complete **AI-assisted spoken English improvement platform**.
 
 ### 🔹 Speech Processing
 
-* Whisper (Transformers + PyTorch) – ML-based high-accuracy transcription
+* Whisper – ML-based high-accuracy transcription
 * Vosk – Lightweight rule-based ASR engine
 * Librosa – Audio preprocessing
 * Pydub – Audio normalization
@@ -56,59 +114,23 @@ This makes it a complete **AI-assisted spoken English improvement platform**.
 
 ## ✨ Features
 
-### 1️⃣ Dual Evaluation Modes
+- **Dual Engine Flexibility:** Switch between rule-based speed and ML-based precision.
 
-#### 🧠 ML-Based Mode (Whisper)
+- **Phonetic Comparison:** Detailed analysis of spoken phonemes against standard English.
 
-* Context-aware speech recognition
-* High transcription accuracy
-* Deep phonetic evaluation
-* Suitable for advanced learners
+- **Grammar Analysis:** Automatically identifies tense and sentence structure errors.
 
-#### ⚡ Rule-Based Mode (Vosk)
-
-* Lightweight and fast processing
-* Phoneme-level pronunciation comparison
-* Efficient performance on low-resource systems
-* Ideal for quick checks
+- **Interactive AI Tutor:** Offers structured feedback and a personalized roadmap for improvement.
 
 ---
-
-### 2️⃣ Practice Mode
-
-Designed for continuous learning and measurable improvement:
-
-* 📊 Saved progress tracking
-* 🎯 Identification of mispronounced words
-* 🔊 Built-in Text-to-Speech (TTS) for correct pronunciation
-* 📈 Performance monitoring over time
-
----
-
-### 3️⃣ AI Tutor & Grammar Check
-
-#### 📝 Grammar Analysis
-
-* Automatically analyzes transcript grammar
-* Identifies tense and sentence structure errors
-* Suggests corrections and improvements
-
-#### 🤖 AI Tutor Interface
-
-* Interactive AI guidance
-* Personalized learning suggestions
-* Structured improvement feedback
-
----
-
 
 
 ## 🔧 Installation Guide
 
 ### Step 1: Clone the Repository
 
-git clone <your-repo-link>
-cd <project-folder>
+git clone https://github.com/RupaliShewale09/Pronunciation_correction_system.git
+cd Pronunciation_correction_system
 
 ### Step 2: Install Dependencies
 
