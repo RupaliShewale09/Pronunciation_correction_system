@@ -6,20 +6,24 @@ from vosk import Model, KaldiRecognizer
 # Path to your extracted Vosk model
 MODEL_PATH = "backend/speech_engine/vosk_model/vosk-model-small-en-us-0.15"
 
-def load_model():
+# Load model once at the start
+model = None
+
+def get_model():
     global model
     if model is None:
         if not os.path.exists(MODEL_PATH):
-            raise FileNotFoundError(f"Model folder not found at: {MODEL_PATH}")
+             raise FileNotFoundError(f"Model folder not found at: {MODEL_PATH}")
         model = Model(MODEL_PATH)
+    return model
 
 def transcribe_audio(audio_path):
     """
     Transcribes audio exactly as spoken without auto-correction.
     Returns: (transcript_string, list_of_words)
     """
-    load_model()
     try:
+        model = get_model() # Load it here only when needed
         wf = wave.open(audio_path, "rb")
         
        # Strict Vosk requirements
@@ -62,6 +66,8 @@ def transcribe_audio(audio_path):
         transcript = " ".join(transcript_parts).strip()
         words = [w for w in transcript.split() if w]
 
+        del rec 
+        
         return transcript, words
 
     except Exception as e:
