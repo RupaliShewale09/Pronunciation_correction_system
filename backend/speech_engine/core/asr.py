@@ -4,7 +4,7 @@ import os
 from vosk import Model, KaldiRecognizer
 
 # Path to your extracted Vosk model
-MODEL_PATH = r"backend\speech_engine\vosk_model\vosk-model-small-en-us-0.15"
+MODEL_PATH = "backend/speech_engine/vosk_model/vosk-model-small-en-us-0.15"
 
 # Load model once at the start
 if not os.path.exists(MODEL_PATH):
