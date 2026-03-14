@@ -9,7 +9,10 @@ from loguru import logger
 def process_audio(audio_path, mode="ml"):
 
     if mode == "ml":
-        transcript, words = ml_transcribe(audio_path)
+        transcript, words, phonemes = ml_transcribe(audio_path)
+        logger.info(f"\n[1] Predicted Transcript: {transcript}")
+        logger.info(f"[2] Tokenized Words: {words}")
+        logger.info(f"[3] Predicted Phonemes: {phonemes}")
         evaluator = ml_evaluate
     elif mode == "rule":
         transcript, words = rule_transcribe(audio_path)
@@ -28,7 +31,18 @@ def process_audio(audio_path, mode="ml"):
             "results": []
         }
 
-    results = [evaluator(word) for word in words]
+    results = []
+
+    if mode == "ml":
+        # ML evaluator needs word + predicted phonemes
+        for i, word in enumerate(words):
+            current_phoneme = [phonemes[i]] if i < len(phonemes) else []
+            result = evaluator(word, current_phoneme)
+            results.append(result)
+    else:
+        # Rule evaluator only needs word
+        results = [evaluator(word) for word in words]
+
     wrong_words = [r for r in results if r.get("status") == "wrong"]
 
     grammar_result = None

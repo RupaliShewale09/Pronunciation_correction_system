@@ -17,3 +17,5 @@ gTTS
 
 python-dotenv
 google-genai
+
+pandas

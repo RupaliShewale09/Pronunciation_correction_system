@@ -2,50 +2,92 @@ import torch
 import librosa
 from transformers import WhisperProcessor, WhisperForConditionalGeneration
 
+TEXT_MODEL_ID = "openai/whisper-base"
+PHONEME_MODEL_PATH = "backend/speech_engine/ml_core/final_model"
 
-model_id = "openai/whisper-base" 
-
-processor = WhisperProcessor.from_pretrained(model_id)
-model = WhisperForConditionalGeneration.from_pretrained(model_id)
-
-# Hardware check
 device = "cuda" if torch.cuda.is_available() else "cpu"
-model.to(device)
-model.eval()
+
+# 1️⃣ Word Transcription Model
+text_processor = WhisperProcessor.from_pretrained(TEXT_MODEL_ID)
+text_model = WhisperForConditionalGeneration.from_pretrained(TEXT_MODEL_ID).to(device)
+text_model.eval()
+
+# 2️⃣ Phoneme Prediction Model
+phoneme_processor = WhisperProcessor.from_pretrained(PHONEME_MODEL_PATH)
+phoneme_model = WhisperForConditionalGeneration.from_pretrained(PHONEME_MODEL_PATH).to(device)
+phoneme_model.eval()
+
 
 def transcribe_audio(audio_path):
     """
-    ML-based speech to text using Whisper-Base (Transformer).
-    Optimized for laptop performance with zero auto-correction.
+    Input: Path to user audio (.wav, 16kHz recommended)
+    Output: List of predicted phonemes (based purely on sound)
     """
-    try:
-        # 1. Load audio and resample to 16kHz
-        speech, sr = librosa.load(audio_path, sr=16000)
 
-        # 2. Pre-process
-        input_features = processor(
-            speech, 
-            sampling_rate=16000, 
-            return_tensors="pt"
-        ).input_features.to(device)
+    # 1️⃣ WORD TRANSCRIPTION
+    speech, _ = librosa.load(audio_path, sr=16000)
 
-        with torch.no_grad():
-            # Strict mode: No creativity, No auto-correct
-            predicted_ids = model.generate(
-                input_features,
-                do_sample=False, 
-                temperature=0.0,
-                language="en",
-                task="transcribe",
-                use_cache=True # Speed up inference on laptops
-            )
+    text_inputs = text_processor(
+        speech,
+        sampling_rate=16000,
+        return_tensors="pt"
+    ).input_features.to(device)
 
-        # 3. Decode output
-        transcript = processor.batch_decode(predicted_ids, skip_special_tokens=True)[0]
+    with torch.no_grad():
+        text_ids = text_model.generate(
+            text_inputs,
+            language="en", 
+            task="transcribe"
+        )
 
-        words = [w for w in transcript.lower().split() if w]
+    transcript = text_processor.batch_decode(
+        text_ids,
+        skip_special_tokens=True
+    )[0].lower()
 
-        return transcript.lower(), words
+    words = [w for w in transcript.split() if w]
+
+    # 2️⃣ PHONEME PREDICTION
+    phoneme_inputs = phoneme_processor(
+        speech,
+        sampling_rate=16000,
+        return_tensors="pt"
+    ).input_features.to(device)
+
+    with torch.no_grad():
+        phoneme_ids = phoneme_model.generate(
+            phoneme_inputs,
+            language="en",
+            task="transcribe"
+        )
+
+    phoneme_output = phoneme_processor.batch_decode(
+        phoneme_ids,
+        skip_special_tokens=True
+    )[0]
+
+    phoneme_list = phoneme_output.strip().split()
+
+    return transcript, words, phoneme_list
+
+if __name__ == "__main__":
+    TEST_AUDIO = "uploads/processed_1.wav" 
     
+    try:
+        print(f"--- Testing ML Core on: {TEST_AUDIO} ---")
+        
+        # Run transcription
+        transcript, words, phonemes = transcribe_audio(TEST_AUDIO)
+        
+        print(f"\n[1] Predicted Transcript: {transcript}")
+        print(f"[2] Tokenized Words: {words}")
+        print(f"[3] Predicted Phonemes: {phonemes}")
+        
+        # Basic sanity check
+        if len(phonemes) > 0:
+            print("\n✅ Success: Phoneme model is generating output.")
+        else:
+            print("\n❌ Warning: Phoneme model output is empty.")
+            
     except Exception as e:
-        return f"ASR Error: {str(e)}", []
+        print(f"An error occurred during testing: {e}")
