@@ -1,5 +1,5 @@
-from backend.speech_engine.core.asr import transcribe_audio as rule_transcribe
-from backend.speech_engine.core.evaluator import evaluate_word as rule_evaluate
+# from backend.speech_engine.core.asr import transcribe_audio as rule_transcribe
+# from backend.speech_engine.core.evaluator import evaluate_word as rule_evaluate
 from backend.speech_engine.ml_core.asr import transcribe_audio as ml_transcribe
 from backend.speech_engine.ml_core.evaluator import evaluate_word as ml_evaluate
 
@@ -14,9 +14,9 @@ def process_audio(audio_path, mode="ml"):
         logger.info(f"[2] Tokenized Words: {words}")
         logger.info(f"[3] Predicted Phonemes: {phonemes}")
         evaluator = ml_evaluate
-    elif mode == "rule":
-        transcript, words = rule_transcribe(audio_path)
-        evaluator = rule_evaluate
+    # elif mode == "rule":
+    #     transcript, words = rule_transcribe(audio_path)
+    #     evaluator = rule_evaluate
     else:
         return {
             "transcript": "",
