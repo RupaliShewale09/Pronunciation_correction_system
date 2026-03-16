@@ -7,7 +7,7 @@ passlib[argon2]
 vosk
 cmudict
 
-torch
+torch --index-url https://download.pytorch.org/whl/cpu
 transformers
 librosa
 soundfile
