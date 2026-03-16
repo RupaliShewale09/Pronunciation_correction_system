@@ -7,22 +7,31 @@ PHONEME_MODEL_PATH = "backend/speech_engine/ml_core/final_model"
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
-# 1️⃣ Word Transcription Model
-text_processor = WhisperProcessor.from_pretrained(TEXT_MODEL_ID)
-text_model = WhisperForConditionalGeneration.from_pretrained(TEXT_MODEL_ID).to(device)
-text_model.eval()
+text_processor = None
+text_model = None
+phoneme_processor = None
+phoneme_model = None
 
-# 2️⃣ Phoneme Prediction Model
-phoneme_processor = WhisperProcessor.from_pretrained(PHONEME_MODEL_PATH)
-phoneme_model = WhisperForConditionalGeneration.from_pretrained(PHONEME_MODEL_PATH).to(device)
-phoneme_model.eval()
 
+def load_models():
+    global text_processor, text_model, phoneme_processor, phoneme_model
+
+    if text_model is None:
+        text_processor = WhisperProcessor.from_pretrained(TEXT_MODEL_ID)
+        text_model = WhisperForConditionalGeneration.from_pretrained(TEXT_MODEL_ID).to(device)
+        text_model.eval()
+
+    if phoneme_model is None:
+        phoneme_processor = WhisperProcessor.from_pretrained(PHONEME_MODEL_PATH)
+        phoneme_model = WhisperForConditionalGeneration.from_pretrained(PHONEME_MODEL_PATH).to(device)
+        phoneme_model.eval()
 
 def transcribe_audio(audio_path):
     """
     Input: Path to user audio (.wav, 16kHz recommended)
     Output: List of predicted phonemes (based purely on sound)
     """
+    load_models()
 
     # 1️⃣ WORD TRANSCRIPTION
     speech, _ = librosa.load(audio_path, sr=16000)
